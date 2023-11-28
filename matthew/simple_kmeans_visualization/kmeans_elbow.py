@@ -12,7 +12,7 @@ from sklearn.cluster import KMeans
 """Visualize some data points"""
 # x = [4, 5, 10, 4, 3, 11, 14 , 6, 10, 12]
 # y = [21, 19, 24, 17, 16, 25, 24, 22, 21, 21]
-x, y = import_data.get_data('small_clusters.csv')
+x, y = import_data.get_data('small_clusters2.csv')
 
 plt.scatter(x, y)
 plt.show()
