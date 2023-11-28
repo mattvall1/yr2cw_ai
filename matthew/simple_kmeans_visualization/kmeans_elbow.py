@@ -23,14 +23,6 @@ plt.show()
 data = list(zip(x, y))
 inertias = []
 
-# Remove duplicate points (Only needed when we use random generated data)
-result = []
-for item in data:
-    if item not in result:
-        result.append(item)
-
-data = result
-
 print(len(data))
 
 # To find the best value of K, we draw an elbow graph,
