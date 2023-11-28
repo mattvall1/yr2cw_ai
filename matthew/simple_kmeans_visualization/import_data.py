@@ -5,6 +5,7 @@
 """
 import csv
 import random
+import testing_functions
 
 
 def get_data(filename):
