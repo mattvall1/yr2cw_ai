@@ -9,7 +9,7 @@ import pandas as pd
 
 
 def get_dataframe(filename):
-    with open('example_data/' + filename, 'r') as file:
+    with open('inputs/' + filename, 'r') as file:
         # Read CSV file
         data = csv.reader(file)
 
