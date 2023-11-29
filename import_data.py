@@ -30,6 +30,7 @@ def get_dataframe(filename):
     return df
 
 
+# Legacy code for testing
 def create_random_chart_data():
     x = []
     y = []
@@ -57,6 +58,3 @@ def create_random_chart_data():
 if __name__ == "__main__":
     print(get_dataframe('segmentation_data.csv').head())
     exit()
-    x, y = create_random_chart_data()
-    data = list(zip(x, y))
-    testing_functions.write_to_csv(data, 'lrg_rand_clusters')
