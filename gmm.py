@@ -1,6 +1,8 @@
 import pandas as pd
 
-data = pd.read_csv('inputs/segmentation_data.csv')
+import import_data
+
+data = import_data.get_dataframe('segmentation_data.csv')
 
 # training gaussian mixture model
 from sklearn.mixture import GaussianMixture
