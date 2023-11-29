@@ -13,7 +13,7 @@ data = import_data.get_dataframe('segmentation_data.csv')
 
 # Get the highest Silhouette Coefficient to determine how many clusters we need
 coeffs = []
-for n_cluster in range(2, 250):
+for n_cluster in range(2, 11):
     kmeans = KMeans(n_clusters=n_cluster).fit(data)
     label = kmeans.labels_
     sil_coeff = silhouette_score(data, label, metric='euclidean')
