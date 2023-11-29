@@ -65,8 +65,8 @@ def plot_pca(classes_list, feature_matrix):
     # plot cluster_ids using the principle components as the coordinates and classes as labels
     colors = [plt.cm.jet(float(i) / max(unique_classes_list)) for i in unique_classes_list]
     for i, u in enumerate(unique_classes_list):
-        xi = [p for (j,p) in enumerate(principle_components_matrix[:,0]) if classes_list[j] == u]
-        yi = [p for (j,p) in enumerate(principle_components_matrix[:,1]) if classes_list[j] == u]
+        xi = [p for (j,p) in enumerate(principle_components_matrix[:, 0]) if classes_list[j] == u]
+        yi = [p for (j,p) in enumerate(principle_components_matrix[:, 1]) if classes_list[j] == u]
         plt.scatter(xi, yi, c=colors[i], label=str(int(u)))
 
     plt.title(input_file.split(".")[0] + " scatter plot")
@@ -100,10 +100,12 @@ def get_jaccard_similarity(clustered_feature_matrix, classes_list, ground_truth_
     denominator = np.sum(np.logical_or(obtained_same_cluster_matrix, ground_truth_same_cluster_matrix))
     return numerator / denominator
 
+
+
 input_file = input('Enter input data: ')
 k = int(input('Enter no. of clusters required: '))
-data = np.loadtxt(input_file,dtype='float')
-y = data[:,2:]
+data = np.loadtxt(input_file, dtype='float')
+y = data[:, 2:]
 
 # Removing columns with 0 variance/std
 ab = np.argwhere((np.std(y,axis=0))==0)
@@ -113,7 +115,6 @@ y = np.delete(y, ab, axis = 1)
 adjusted_matrix = (y - y.mean(axis=0))/(np.max(y,axis=0)-np.min(y,axis=0))
 
 cluster_id_list = hc(adjusted_matrix,k)
-
 # PCA
 unique_cluster_id_list = list(set(cluster_id_list))
 new_list = []
