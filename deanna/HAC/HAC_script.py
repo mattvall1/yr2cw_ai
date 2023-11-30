@@ -32,24 +32,26 @@ def hc(inp,k):
                 label[label==distance_matrix.loc[l][1]] = distance_matrix.loc[l][0]
                 distance_matrix = distance_matrix.replace((distance_matrix.loc[l][1]),(distance_matrix.loc[l][0]))
                 count = count-1
-    filename = 'hac_deanna'
-    distance_matrix.to_csv('outputs/' + filename + '.csv', sep=',', encoding='utf-8')
+
 
     unique, counts = np.unique(label, return_counts= True)
     unique = [int(i) for i in unique]
     # how many points are in each of the clusters
     print("Cluster ID: count = " + str(dict(zip(unique, counts))))
 
+    #filename = 'hac_deanna'
+    #counts.to_csv('outputs/' + filename + '.csv', sep=',', encoding='utf-8')
     centroids = {}
     for x in label:
         if x == 0:
             continue
         centroids[x] = np.asarray(np.where(label == x))+1
 
+
     #Printing Centroids
-    #print("Cluster ID: points in cluster = ")
-    #for key, value in centroids.items():
-        #print (str(key) + ":" + str(value))
+    print("Cluster ID: points in cluster = ")
+    for key, value in centroids.items():
+        print (str(key) + ":" + str(value))
 
     return label
 
@@ -130,7 +132,7 @@ endTime = time.time()
 totalTime = endTime - startTime
 print("Total Time: ", totalTime)
 
-plot_pca(new_list, adjusted_matrix)
+#plot_pca(new_list, adjusted_matrix)
 
 # Jaccard
 groundTruth_cluster_id_list = data[:, 1]
