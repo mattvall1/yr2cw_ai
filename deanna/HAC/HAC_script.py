@@ -30,10 +30,11 @@ def hc(inp,k):
         if(count!=k):
             if((distance_matrix.loc[l][0])!=(distance_matrix.loc[l][1])):
                 label[int(distance_matrix.loc[l][0])] = distance_matrix.loc[l][0]
-                label[label==distance_matrix.loc[l][1]] = distance_matrix.loc[l][0]
+                label[label == distance_matrix.loc[l][1]] = distance_matrix.loc[l][0]
                 distance_matrix = distance_matrix.replace((distance_matrix.loc[l][1]),(distance_matrix.loc[l][0]))
                 count = count-1
 
+    #creates a CSV file with the clustering column
     df['Cluster'] = label
     df.to_csv('outputs/' + filename + '.csv', sep=',', encoding='utf-8')
 
@@ -137,7 +138,7 @@ endTime = time.time()
 totalTime = endTime - startTime
 print("Total Time: ", totalTime)
 
-#plot_pca(new_list, adjusted_matrix)
+plot_pca(new_list, adjusted_matrix)
 
 # Jaccard
 groundTruth_cluster_id_list = data[:, 1]
