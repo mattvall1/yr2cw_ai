@@ -2,10 +2,12 @@ import numpy as np
 import pandas as pd
 from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
+import time
 
 def dist_mat(myList):
-
+    # creates a distance matrix
     l = myList.shape[0]
+    # gives 3 columns for the two points and their distance between them to compare
     distance_matrix = np.zeros((int((l**2-l)/2), 3))
     counter = 0
     for x in range(0,(myList.shape[0])-1):
@@ -34,6 +36,7 @@ def hc(inp,k):
 
     unique, counts = np.unique(label, return_counts= True)
     unique = [int(i) for i in unique]
+    # how many points are in each of the clusters
     print("Cluster ID: count = " + str(dict(zip(unique, counts))))
 
     centroids = {}
@@ -43,9 +46,9 @@ def hc(inp,k):
         centroids[x] = np.asarray(np.where(label == x))+1
 
     #Printing Centroids
-    print("Cluster ID: points in cluster = ")
-    for key, value in centroids.items():
-        print (str(key) + ":" + str(value))
+    #print("Cluster ID: points in cluster = ")
+    #for key, value in centroids.items():
+        #print (str(key) + ":" + str(value))
 
     return label
 
@@ -104,6 +107,7 @@ def get_jaccard_similarity(clustered_feature_matrix, classes_list, ground_truth_
 
 input_file = input('Enter input data: ')
 k = int(input('Enter no. of clusters required: '))
+startTime = time.time()
 data = np.loadtxt(input_file, dtype='float')
 y = data[:, 2:]
 
@@ -120,6 +124,10 @@ unique_cluster_id_list = list(set(cluster_id_list))
 new_list = []
 for cluster_id in cluster_id_list:
     new_list.append(unique_cluster_id_list.index(cluster_id))
+
+endTime = time.time()
+totalTime = endTime - startTime
+print("Total Time: ", totalTime)
 
 plot_pca(new_list, adjusted_matrix)
 
