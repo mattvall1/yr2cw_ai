@@ -4,6 +4,7 @@ from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 import time
 import import_data
+
 def dist_mat(myList):
     # creates a distance matrix
     l = myList.shape[0]
@@ -33,6 +34,8 @@ def hc(inp,k):
                 distance_matrix = distance_matrix.replace((distance_matrix.loc[l][1]),(distance_matrix.loc[l][0]))
                 count = count-1
 
+    df['Cluster'] = label
+    df.to_csv('outputs/' + filename + '.csv', sep=',', encoding='utf-8')
 
     unique, counts = np.unique(label, return_counts= True)
     unique = [int(i) for i in unique]
@@ -51,7 +54,7 @@ def hc(inp,k):
     #Printing Centroids
     print("Cluster ID: points in cluster = ")
     for key, value in centroids.items():
-        print (str(key) + ":" + str(value))
+        print(str(key) + ":" + str(value))
 
     return label
 
@@ -111,8 +114,10 @@ def get_jaccard_similarity(clustered_feature_matrix, classes_list, ground_truth_
 input_file = input('Enter input data: ')
 k = int(input('Enter no. of clusters required: '))
 startTime = time.time()
-data = import_data.get_dataframe(input_file, dtype='float')
+data = np.loadtxt(input_file, dtype='float')
 y = data[:, 2:]
+df = import_data.get_dataframe(input_file)
+filename = 'hac_attempt2'
 
 # Removing columns with 0 variance/std
 ab = np.argwhere((np.std(y,axis=0))==0)
