@@ -32,7 +32,8 @@ def hc(inp,k):
                 label[label==distance_matrix.loc[l][1]] = distance_matrix.loc[l][0]
                 distance_matrix = distance_matrix.replace((distance_matrix.loc[l][1]),(distance_matrix.loc[l][0]))
                 count = count-1
-
+    filename = 'hac_deanna'
+    distance_matrix.to_csv('outputs/' + filename + '.csv', sep=',', encoding='utf-8')
 
     unique, counts = np.unique(label, return_counts= True)
     unique = [int(i) for i in unique]
@@ -135,4 +136,5 @@ plot_pca(new_list, adjusted_matrix)
 groundTruth_cluster_id_list = data[:, 1]
 jaccard_similarity = get_jaccard_similarity(adjusted_matrix, cluster_id_list, groundTruth_cluster_id_list)
 print("Jaccard similarity: " + str(jaccard_similarity))
+
 
