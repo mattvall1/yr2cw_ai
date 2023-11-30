@@ -3,8 +3,8 @@ import pandas as pd
 from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 import time
+from sklearn.preprocessing import OrdinalEncoder
 from sklearn.metrics import silhouette_score
-
 def dist_mat(myList):
     # creates a distance matrix
     l = myList.shape[0]
@@ -18,50 +18,45 @@ def dist_mat(myList):
 
     return(distance_matrix)
 
-def hc(inp,k):
+def hc(inp, k):
     distance_matrix = dist_mat(inp)
     distance_matrix = pd.DataFrame(distance_matrix)
     distance_matrix = distance_matrix.sort_values(by=2)
     distance_matrix.reset_index(inplace=True)
     distance_matrix = distance_matrix.iloc[:,1:4]
     count = inp.shape[0]
-    label = np.array(list(range(0,inp.shape[0])))
-    for l in range(0,distance_matrix.shape[0]):
-        if(count!=k):
-            if((distance_matrix.loc[l][0])!=(distance_matrix.loc[l][1])):
+    label = np.array(list(range(0, inp.shape[0])))
+    for l in range(0, distance_matrix.shape[0]):
+        if count != k:
+            if distance_matrix.loc[l][0] != distance_matrix.loc[l][1]:
                 label[int(distance_matrix.loc[l][0])] = distance_matrix.loc[l][0]
                 label[label == distance_matrix.loc[l][1]] = distance_matrix.loc[l][0]
-                distance_matrix = distance_matrix.replace((distance_matrix.loc[l][1]),(distance_matrix.loc[l][0]))
-                count = count-1
+                distance_matrix = distance_matrix.replace(distance_matrix.loc[l][1], distance_matrix.loc[l][0])
+                count = count - 1
 
-    #creates a CSV file with the clustering column
-    #df['Cluster'] = label
-    #df.to_csv('outputs/' + filename + '.csv', sep=',', encoding='utf-8')
+    # creates a CSV file with the clustering column
+    df['Cluster'] = label
+    df.to_csv('outputs/' + filename + '.csv', sep=',', encoding='utf-8')
 
-    unique, counts = np.unique(label, return_counts= True)
+    unique, counts = np.unique(label, return_counts=True)
     unique = [int(i) for i in unique]
     # how many points are in each of the clusters
     print("Cluster ID: count = " + str(dict(zip(unique, counts))))
 
-    #filename = 'hac_deanna'
-    #counts.to_csv('outputs/' + filename + '.csv', sep=',', encoding='utf-8')
     centroids = {}
     for x in label:
         if x == 0:
             continue
         centroids[x] = np.asarray(np.where(label == x))+1
 
-
-    #Printing Centroids
+    # Printing Centroids
     print("Cluster ID: points in cluster = ")
     for key, value in centroids.items():
         print(str(key) + ":" + str(value))
 
     return label
 
-
 '''-------------PCA-------------'''
-
 
 def plot_pca(classes_list, feature_matrix):
     # get the unique list of classes
@@ -85,9 +80,7 @@ def plot_pca(classes_list, feature_matrix):
     plt.legend()
     plt.show()
 
-
 '''-------------Jaccard-------------'''
-
 
 def get_jaccard_similarity(clustered_feature_matrix, classes_list, ground_truth_classes_list):
     obtained_same_cluster_matrix = np.zeros((len(clustered_feature_matrix), len(clustered_feature_matrix)))
@@ -111,23 +104,45 @@ def get_jaccard_similarity(clustered_feature_matrix, classes_list, ground_truth_
     return numerator / denominator
 
 
-
-input_file = input('Enter input data: ')
-k = int(input('Enter no. of clusters required: '))
+# Read categorical data directly using pandas
+input_file = 'data4Up.csv'
+k = 2
 startTime = time.time()
-data = np.loadtxt(input_file, dtype='float')
+
+# Read the CSV file using pandas
+df = pd.read_csv('data4Up.csv')
+
+data = pd.read_csv('data4Up.csv')
+original = pd.read_csv('data4Up.csv')
+# features = ['Gender', 'Item Purchased', 'Category', 'Location', 'Size', 'Color', 'Season', 'Subscription Status', 'Shipping Type', 'Discount Applied', 'Promo Code Used', 'Payment Method', 'Frequency of Purchases']
+features_ordinal = ['Gender', 'Size', 'Subscription Status', 'Shipping Type', 'Discount Applied', 'Promo Code Used','Frequency of Purchases']
+features_hot = ['Item Purchased', 'Category', 'Location', 'Color', 'Season', 'Shipping Type', 'Payment Method']
+
+# One-hot encode categorical columns with 0 or 1
+ordinal_encoder = OrdinalEncoder()
+data[features_ordinal] = ordinal_encoder.fit_transform(data[features_ordinal])
+
+data = pd.get_dummies(data, columns=features_hot ).astype(int)
+
+
+# Encode categorical data if needed (replace 'column_name' with your actual column names)
+# df['categorical_column'] = pd.factorize(df['categorical_column'])[0]
+
+# Handle NaN values if any
+data = np.nan_to_num(data)
+
+# Your existing code
 y = data[:, 2:]
-#df = import_data.get_dataframe(input_file)
 filename = 'hac_attempt2'
 
 # Removing columns with 0 variance/std
 ab = np.argwhere((np.std(y,axis=0))==0)
-y = np.delete(y, ab, axis = 1)
+y = np.delete(y, ab, axis=1)
 
 # normalization
 adjusted_matrix = (y - y.mean(axis=0))/(np.max(y,axis=0)-np.min(y,axis=0))
 
-cluster_id_list = hc(adjusted_matrix,k)
+cluster_id_list = hc(adjusted_matrix, k)
 # PCA
 unique_cluster_id_list = list(set(cluster_id_list))
 new_list = []
@@ -145,4 +160,7 @@ groundTruth_cluster_id_list = data[:, 1]
 jaccard_similarity = get_jaccard_similarity(adjusted_matrix, cluster_id_list, groundTruth_cluster_id_list)
 print("Jaccard similarity: " + str(jaccard_similarity))
 
+labels = hc(data, k)
+score = silhouette_score(data, labels)
 
+print(f'Silhouette score: {score}')
