@@ -4,13 +4,24 @@
     Notes: https://www.w3schools.com/python/python_ml_k-means.asp
     Date: 10/11/23
 """
+import pandas as pd
 from sklearn.metrics import silhouette_score
+from sklearn.preprocessing import OrdinalEncoder
 import import_data
 from sklearn.cluster import KMeans
+import time
 
 # Import the data
-print('Data importing...')
-data = import_data.get_dataframe('segmentation_data.csv')
+print('Data importing and processing...')
+data = pd.read_csv('inputs/shopping_trends.csv')
+original_data = pd.read_csv('inputs/shopping_trends.csv')
+headers = import_data.get_dataframe('shopping_trends.csv')
+
+# TODO: Feature selection?
+
+ordinal_encoder = OrdinalEncoder()
+data[headers] = ordinal_encoder.fit_transform(data[headers])
+
 print('-------------------- Import complete --------------------\n')
 
 print('KMeans training...')
@@ -32,11 +43,12 @@ print('Decided cluster length: ' + str(n_clusters) + '\n')
 print('Running KMeans with decided cluster length...')
 kmeans = KMeans(n_clusters=n_clusters)
 kmeans.fit(data)
-data['Cluster'] = kmeans.labels_
+
+original_data['Cluster'] = kmeans.labels_
 print('-------------------- KMeans complete --------------------\n')
 
 # Output data to CSV
 filename = 'kmeans_output'
-data.to_csv('outputs/' + filename + '.csv', sep=',', encoding='utf-8')
+original_data.to_csv('outputs/' + filename + '.csv', sep=',', encoding='utf-8', index=False)
 print('Outputted to ' + filename + '.csv')
 

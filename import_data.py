@@ -19,15 +19,16 @@ def get_dataframe(filename):
             temp_line_data = []
             if count < 1:
                 df = pd.DataFrame(columns=line)
+                headers = line
                 row_count = len(line)
             else:
                 for col in range(0, row_count):
-                    temp_line_data.append(int(line[col]))
+                    temp_line_data.append(line[col])
                 df.loc[count] = temp_line_data
 
             count += 1
 
-    return df
+    return headers
 
 
 # Legacy code for testing
