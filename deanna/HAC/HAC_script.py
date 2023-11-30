@@ -3,7 +3,7 @@ import pandas as pd
 from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 import time
-
+import import_data
 def dist_mat(myList):
     # creates a distance matrix
     l = myList.shape[0]
@@ -111,7 +111,7 @@ def get_jaccard_similarity(clustered_feature_matrix, classes_list, ground_truth_
 input_file = input('Enter input data: ')
 k = int(input('Enter no. of clusters required: '))
 startTime = time.time()
-data = np.loadtxt(input_file, dtype='float')
+data = import_data.get_dataframe(input_file, dtype='float')
 y = data[:, 2:]
 
 # Removing columns with 0 variance/std
