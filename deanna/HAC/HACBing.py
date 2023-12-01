@@ -4,7 +4,45 @@ from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 import time
 from sklearn.preprocessing import OrdinalEncoder
-from sklearn.metrics import silhouette_score
+from sklearn.cluster import AgglomerativeClustering
+from sklearn.metrics import silhouette_samples
+
+def silhouette_average(data, labels):
+    cluster_labels = np.unique(labels)
+    silhouette_vals = silhouette_samples(data, labels)
+
+    for i, c in enumerate(cluster_labels):
+        c_silhouette_vals = silhouette_vals[labels == c]
+        c_silhouette_vals.sort()
+    return np.mean(silhouette_vals)
+def plot_silhouette(data, labels):
+    cluster_labels = np.unique(labels)
+    n_clusters = len(cluster_labels)
+    silhouette_vals = silhouette_samples(data, labels)
+
+    y_ax_lower, y_ax_upper = 0, 0
+    yticks = []
+
+    for i, c in enumerate(cluster_labels):
+        c_silhouette_vals = silhouette_vals[labels == c]
+        c_silhouette_vals.sort()
+
+        y_ax_upper += len(c_silhouette_vals)
+        color = plt.cm.get_cmap("Spectral")(float(i) / n_clusters)
+        plt.barh(range(y_ax_lower, y_ax_upper), c_silhouette_vals, height=1.0, edgecolor='none', color=color)
+        yticks.append((y_ax_lower + y_ax_upper) / 2)
+        y_ax_lower += len(c_silhouette_vals)
+
+    silhouette_avg = np.mean(silhouette_vals)
+    plt.axvline(silhouette_avg, color="red", linestyle="--")
+    plt.yticks(yticks, cluster_labels + 1)
+    plt.ylabel('Cluster')
+    plt.xlabel('Silhouette coefficient')
+    plt.show()
+
+
+
+
 def dist_mat(myList):
     # creates a distance matrix
     l = myList.shape[0]
@@ -19,20 +57,11 @@ def dist_mat(myList):
     return(distance_matrix)
 
 def hc(inp, k):
-    distance_matrix = dist_mat(inp)
-    distance_matrix = pd.DataFrame(distance_matrix)
-    distance_matrix = distance_matrix.sort_values(by=2)
-    distance_matrix.reset_index(inplace=True)
-    distance_matrix = distance_matrix.iloc[:,1:4]
-    count = inp.shape[0]
-    label = np.array(list(range(0, inp.shape[0])))
-    for l in range(0, distance_matrix.shape[0]):
-        if count != k:
-            if distance_matrix.loc[l][0] != distance_matrix.loc[l][1]:
-                label[int(distance_matrix.loc[l][0])] = distance_matrix.loc[l][0]
-                label[label == distance_matrix.loc[l][1]] = distance_matrix.loc[l][0]
-                distance_matrix = distance_matrix.replace(distance_matrix.loc[l][1], distance_matrix.loc[l][0])
-                count = count - 1
+    # Create a model and fit it
+    model = AgglomerativeClustering(n_clusters=k)
+    model.fit(inp)
+    # Get labels
+    label = model.labels_
 
     # creates a CSV file with the clustering column
     df['Cluster'] = label
@@ -105,18 +134,18 @@ def get_jaccard_similarity(clustered_feature_matrix, classes_list, ground_truth_
 
 
 # Read categorical data directly using pandas
-input_file = 'data4Up.csv'
-k = 6
+input_file = 'data4up_REMOVED_ENCODED.csv'
+k = 9
 startTime = time.time()
 
 # Read the CSV file using pandas
-df = pd.read_csv('data4Up.csv')
+df = pd.read_csv('data4up_REMOVED_ENCODED.csv')
 
-data = pd.read_csv('data4Up.csv')
-original = pd.read_csv('data4Up.csv')
+data = pd.read_csv('data4up_REMOVED_ENCODED.csv')
+original = pd.read_csv('data4up_REMOVED_ENCODED.csv')
 # features = ['Gender', 'Item Purchased', 'Category', 'Location', 'Size', 'Color', 'Season', 'Subscription Status', 'Shipping Type', 'Discount Applied', 'Promo Code Used', 'Payment Method', 'Frequency of Purchases']
-features_ordinal = ['Gender', 'Size', 'Subscription Status', 'Shipping Type', 'Discount Applied', 'Promo Code Used','Frequency of Purchases']
-features_hot = ['Item Purchased', 'Category', 'Location', 'Color', 'Season', 'Shipping Type', 'Payment Method']
+features_ordinal = ['Gender', 'Subscription Status', 'Promo Code Used','Frequency of Purchases']
+features_hot = ['Item Purchased', 'Category', 'Season']
 
 # One-hot encode categorical columns with 0 or 1
 ordinal_encoder = OrdinalEncoder()
@@ -149,10 +178,14 @@ new_list = []
 for cluster_id in cluster_id_list:
     new_list.append(unique_cluster_id_list.index(cluster_id))
 
+labels = hc(data, k)
+score = silhouette_average(data, labels)
+
+print(f'Silhouette score: {score}')
+
 endTime = time.time()
 totalTime = endTime - startTime
 print("Total Time: ", totalTime)
-
 plot_pca(new_list, adjusted_matrix)
 
 # Jaccard
@@ -160,7 +193,4 @@ groundTruth_cluster_id_list = data[:, 1]
 jaccard_similarity = get_jaccard_similarity(adjusted_matrix, cluster_id_list, groundTruth_cluster_id_list)
 print("Jaccard similarity: " + str(jaccard_similarity))
 
-labels = hc(data, k)
-score = silhouette_score(data, labels)
-
-print(f'Silhouette score: {score}')
+plot_silhouette(data, labels)
