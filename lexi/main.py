@@ -23,7 +23,7 @@ def meanshift_clustering():
 
 
 def two_var_scatter(data, cluster_centers):
-    plt.scatter(data['list_price'], data['property_valuation']) #, c=data['cluster'], cmap='Spectral')
+    plt.scatter(data['list_price'], data['property_valuation'], c=data['cluster'], cmap='Spectral')
     plt.scatter(cluster_centers[:, 4], cluster_centers[:, 10], marker='o', s=50, color='red', label='Cluster Centers')
     plt.title('Mean Shift Clustering Results')
     plt.xlabel('Feature X')

@@ -7,14 +7,14 @@ def remove_encode():
 
     # Removing unnecessary columns -'transaction_id', 'product_id', 'customer_id', 'product_first_sold_date',
     # 'first_name', 'last_name', 'job_title', 'tenure'
-    columns_to_remove = ['transaction_date', 'order_status', 'standard_cost', 'customer_id', 'job_industry_category',
-                         'deceased_indicator']
-    data = data.drop(columns=columns_to_remove, axis=1)
+    #columns_to_remove = ['transaction_date', 'order_status', 'standard_cost', 'customer_id', 'job_industry_category',
+    #                     'deceased_indicator']
+    #data = data.drop(columns=columns_to_remove, axis=1)
 
     # Changing binary features to 1 or 0
     binary_features = ['online_order', 'owns_car']
     for feature in binary_features:
-        data[feature] = data[feature].replace({'True': 1, 'False': 0, '': 0, 'Yes': 1, 'No': 0})
+        data[feature] = data[feature].replace({True: 1, False: 0, '': 0, 'Yes': 1, 'No': 0})
 
     # Identifying categorical features and reassigning values
     categorical_features = ['brand', 'product_line', 'product_size', 'gender', 'wealth_segment']
