@@ -8,10 +8,10 @@ import seaborn as sns
 
 def meanshift_clustering():
     # Loading dataset
-    df = pd.read_csv('99Bikers_REMOVED_ENCODED.csv', header=0)
+    df = pd.read_csv('99Bikers_REMOVED_ENCODED_SCALED.csv', header=0)
 
     # Fit the data to the Mean Shift algorithm
-    bandwidth = estimate_bandwidth(df, quantile=0.2122)  # 0.2122 IS THE TRAINED OPTIMAL QUANT
+    bandwidth = estimate_bandwidth(df, quantile=0.025)  # 0.2122 IS THE TRAINED OPTIMAL QUANT - no scaling
     ms = MeanShift(bandwidth=bandwidth)
     ms.fit(df)
     labels = ms.labels_
@@ -19,6 +19,7 @@ def meanshift_clustering():
     silhouette_avg = silhouette_score(df, labels)
     df['cluster'] = labels
     print("number of estimated clusters : %d" % len(set(labels)))
+    print(silhouette_avg)
     subset_pairplot(df)
 
 

@@ -1,4 +1,5 @@
 import pandas as pd
+from sklearn.preprocessing import MinMaxScaler
 
 
 def remove_encode():
@@ -40,4 +41,16 @@ def get_unique():
     print(unique_values)
 
 
-remove_encode()
+def scaler():
+    # Loading dataset
+    df = pd.read_csv('99Bikers_REMOVED_ENCODED.csv', header=0)
+
+    columns_to_scale = ['list_price', 'age', 'past_3_years_bike_related_purchases']
+    scaler = MinMaxScaler(feature_range=(0, 10))
+    scaled_columns = scaler.fit_transform(df[columns_to_scale])
+    df_scaled = pd.DataFrame(scaled_columns, columns=columns_to_scale)
+    df[columns_to_scale] = df_scaled
+    df.to_csv('99Bikers_REMOVED_ENCODED_SCALED.csv', index=False)
+
+
+scaler()
