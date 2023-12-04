@@ -1,6 +1,6 @@
 """
     Author: Matthew Vallance 001225832
-    Purpose: K-Means using the Elbow method
+    Purpose: K-Means algorithm
     Notes: https://www.w3schools.com/python/python_ml_k-means.asp
     Date: 10/11/23
 """
@@ -15,10 +15,8 @@ import time
 
 # Import the data
 print('Data importing and processing...')
-data = pd.read_csv('inputs/99Bikers_REMOVED_ENCODED.csv')
-
+data = pd.read_csv('inputs/99Bikers_REMOVED_ENCODED_SCALED.csv')
 features = data.columns.tolist()
-
 print('-------------------- Import complete --------------------\n')
 
 print('KMeans training...')
@@ -41,12 +39,12 @@ print('Decided cluster length: ' + str(n_clusters) + '\n')
 
 # Rerun KMeans after training and add the clusters to the dataframe
 print('Running KMeans with decided cluster length...')
-kmeans = KMeans(n_clusters=n_clusters)
+kmeans = KMeans(n_clusters=4)
 kmeans.fit(data)
-
 data['Cluster'] = pd.Series(kmeans.labels_)
 print('-------------------- KMeans complete --------------------\n')
 
+# Plotting functions
 def plot_silhouette(data, labels):
     cluster_labels = np.unique(labels)
     n_clusters = len(cluster_labels)
@@ -72,6 +70,8 @@ def plot_silhouette(data, labels):
     plt.xlabel('Silhouette coefficient')
     plt.show()
 
+def silhouette_average(data, labels):
+    return silhouette_score(data, labels)
 
 def plot_matrix_graphs(df, filename):
     # Remove extra stuff we dont want to compare
@@ -84,3 +84,5 @@ def plot_matrix_graphs(df, filename):
 
 plot_silhouette(data, kmeans.labels_)
 plot_matrix_graphs(data, 'output_kmeans')
+
+print(silhouette_average(data, kmeans.labels_))
