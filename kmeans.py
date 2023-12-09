@@ -1,7 +1,6 @@
 """
     Author: Matthew Vallance 001225832
     Purpose: K-Means algorithm
-    Notes: https://www.w3schools.com/python/python_ml_k-means.asp
     Date: 10/11/23
 """
 import numpy as np
