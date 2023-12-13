@@ -3,17 +3,17 @@ import pandas as pd
 from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 import time
+from sklearn.preprocessing import OrdinalEncoder
 from sklearn.cluster import AgglomerativeClustering
 from sklearn.metrics import silhouette_samples
 from scipy.cluster.hierarchy import dendrogram, linkage, fcluster
-import seaborn as sns
 from sklearn.metrics import silhouette_score
 
-#calculates the average of the silhouette score
+
 def silhouette_average(data, labels):
     return silhouette_score(data, labels)
 
-#plots a graph to see the performance of each cluster
+
 def plot_silhouette(data, labels):
     cluster_labels = np.unique(labels)
     n_clusters = len(cluster_labels)
@@ -53,7 +53,7 @@ def dist_mat(myList):
 
     return(distance_matrix)
 
-#hierarchical clustering function
+
 def hc(inp, k):
     # Create a model and fit it
     model = AgglomerativeClustering(n_clusters=k)
@@ -106,7 +106,6 @@ def plot_pca(classes_list, feature_matrix):
                distance_sort='descending',
                show_leaf_counts=True)
     plt.show()
-
     # Determine the clusters at which to cut the dendrogram
     cluster_labels = fcluster(linked, 15, criterion='distance')
 
@@ -117,7 +116,7 @@ def plot_pca(classes_list, feature_matrix):
         yi = [p for (j,p) in enumerate(principle_components_matrix[:, 1]) if classes_list[j] == u]
         plt.scatter(xi, yi, c=colors[i], label=str(int(u)))
 
-    plt.title("scatter plot")
+    plt.title(input_file.split(".")[0] + " scatter plot")
     plt.xlabel("Principle_component_1")
     plt.ylabel("Principle_component_2")
     plt.legend()
@@ -125,18 +124,27 @@ def plot_pca(classes_list, feature_matrix):
 
     return cluster_labels
 
-
-"---Call functions---"
+'''-------------Jaccard-------------'''
 
 
 # Read categorical data directly using pandas
-k =4
+input_file = '99Bikers_REMOVED_ENCODED.csv'
+k =3
 startTime = time.time()
-df = pd.read_csv('99Bikers_REMOVED_ENCODED_SCALED.csv', usecols=["list_price", "property_valuation", "past_3_years_bike_related_purchases","age"])
-# Read the CSV file using pandas
-data = pd.read_csv('99Bikers_REMOVED_ENCODED_SCALED.csv', usecols=["list_price", "property_valuation", "past_3_years_bike_related_purchases","age"])
 
+# Read the CSV file using pandas
+df = pd.read_csv('99Bikers_REMOVED_ENCODED.csv')
+
+data = pd.read_csv('99Bikers_REMOVED_ENCODED.csv')
+
+ToF = ['online_order']
+# One-hot encode categorical columns with 0 or 1
+ordinal_encoder = OrdinalEncoder()
+data[ToF] = ordinal_encoder.fit_transform(data[ToF])
+
+# Your existing code
 y = data.iloc[:, 2:]
+
 
 # Removing columns with 0 variance/std
 ab = np.argwhere((np.std(y,axis=0))==0)
@@ -152,23 +160,14 @@ new_list = []
 for cluster_id in cluster_id_list:
     new_list.append(unique_cluster_id_list.index(cluster_id))
 
-#silhouette score
 labels = hc(data, k)
 score = silhouette_average(data, labels)
+
 print(f'Silhouette score: {score}')
 
-#end timer and print to screen
 endTime = time.time()
 totalTime = endTime - startTime
 print("Total Time: ", totalTime)
-
 #call PCA function
 plot_pca(new_list, adjusted_matrix)
 plot_silhouette(data, labels)
-
-
-# Create a pair plot 3x3 to compare performance
-filename2 = 'manyCharts'
-sns.pairplot(df, hue='Cluster', palette='Spectral')
-plt.savefig('outputs/' + filename2 + '.jpg', dpi=250)
-plt.show()
