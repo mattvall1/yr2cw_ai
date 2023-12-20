@@ -33,25 +33,24 @@ plt.show()
 """Visualize the inertia for different values of K"""
 # Turn data into set of points to plot, list(zip())
 data = list(zip(x, y))
-coeffs = []
+inertias = []
 
 print(len(data))
 
-# Get the highest Silhoette Coefficient to determaine how many clusters we need
-for n_cluster in range(2, 25):
-    kmeans = KMeans(n_clusters=n_cluster).fit(data)
-    label = kmeans.labels_
-    sil_coeff = silhouette_score(data, label, metric='euclidean')
-    print("For n_clusters={}, The Silhouette Coefficient is {}".format(n_cluster, sil_coeff))
-    coeffs.append(sil_coeff)
+# To find the best value of K, we draw an elbow graph,
+for i in range(1, 11):
+    kmeans = KMeans(n_clusters=i)
+    kmeans.fit(data)
+    inertias.append(kmeans.inertia_)
 
-# Get index of highest Silhoette Coefficient (we add two to this to ger the correct number
-max = max(coeffs)
-n_clusters = coeffs.index(max) + 2
-
+plt.plot(range(1, 11), inertias, marker='o')
+plt.title('Elbow method')
+plt.xlabel('Number of clusters')
+plt.ylabel('Inertia')
+plt.show()
 
 """Last plot shows that 2 is a good value for K, so we retrain and visualize the result:"""
-kmeans = KMeans(n_clusters=n_clusters)
+kmeans = KMeans(n_clusters=3)
 kmeans.fit(data)
 
 plt.scatter(x, y, c=kmeans.labels_)
