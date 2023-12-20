@@ -38,12 +38,12 @@ inertias = []
 print(len(data))
 
 # To find the best value of K, we draw an elbow graph,
-for i in range(1, 11):
+for i in range(2, 11):
     kmeans = KMeans(n_clusters=i)
     kmeans.fit(data)
     inertias.append(kmeans.inertia_)
 
-plt.plot(range(1, 11), inertias, marker='o')
+plt.plot(range(2, 11), inertias, marker='o')
 plt.title('Elbow method')
 plt.xlabel('Number of clusters')
 plt.ylabel('Inertia')
