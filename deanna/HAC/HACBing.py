@@ -63,8 +63,8 @@ def hc(inp, k):
 
     # creates a CSV file with the clustering column
     filename = 'hac_attempt2'
-    df['Cluster'] = label
-    df.to_csv('outputs/' + filename + '.csv', sep=',', encoding='utf-8')
+    data['Cluster'] = label
+    data.to_csv('outputs/' + filename + '.csv', sep=',', encoding='utf-8')
 
     unique, counts = np.unique(label, return_counts=True)
     unique = [int(i) for i in unique]
@@ -93,10 +93,10 @@ def plot_pca(classes_list, feature_matrix):
     # obtain the principle components matrix
     pca_object = PCA(n_components=2, svd_solver='full')
     pca_object.fit(feature_matrix)
-    principle_components_matrix = pca_object.transform(feature_matrix)
+    principal_components_matrix = pca_object.transform(feature_matrix)
 
     # Use ward as linkage metric and calculate full dendrogram
-    linked = linkage(principle_components_matrix, 'ward')
+    linked = linkage(principal_components_matrix, 'ward')
 
     plt.figure(figsize=(10, 7))
 
@@ -108,18 +108,18 @@ def plot_pca(classes_list, feature_matrix):
     plt.show()
 
     # Determine the clusters at which to cut the dendrogram
-    cluster_labels = fcluster(linked, 15, criterion='distance')
+    cluster_labels = fcluster(linked, 5, criterion='distance')
 
-    # plot cluster_ids using the principle components as the coordinates and classes as labels
+    # plot cluster_ids using the principal components as the coordinates and classes as labels
     colors = [plt.cm.jet(float(i) / max(unique_classes_list)) for i in unique_classes_list]
     for i, u in enumerate(unique_classes_list):
-        xi = [p for (j,p) in enumerate(principle_components_matrix[:, 0]) if classes_list[j] == u]
-        yi = [p for (j,p) in enumerate(principle_components_matrix[:, 1]) if classes_list[j] == u]
+        xi = [p for (j,p) in enumerate(principal_components_matrix[:, 0]) if classes_list[j] == u]
+        yi = [p for (j,p) in enumerate(principal_components_matrix[:, 1]) if classes_list[j] == u]
         plt.scatter(xi, yi, c=colors[i], label=str(int(u)))
 
     plt.title("scatter plot")
-    plt.xlabel("Principle_component_1")
-    plt.ylabel("Principle_component_2")
+    plt.xlabel("Principal_component_1")
+    plt.ylabel("Principal_component_2")
     plt.legend()
     plt.show()
 
@@ -132,7 +132,8 @@ def plot_pca(classes_list, feature_matrix):
 # Read categorical data directly using pandas
 k =4
 startTime = time.time()
-df = pd.read_csv('99Bikers_REMOVED_ENCODED_SCALED.csv', usecols=["list_price", "property_valuation", "past_3_years_bike_related_purchases","age"])
+#df = pd.read_csv('99Bikers_REMOVED_ENCODED_SCALED.csv', usecols=["list_price", "property_valuation", "past_3_years_bike_related_purchases","age"])
+#data = pd.read_csv('data4up_REMOVED_ENCODED.csv')
 # Read the CSV file using pandas
 data = pd.read_csv('99Bikers_REMOVED_ENCODED_SCALED.csv', usecols=["list_price", "property_valuation", "past_3_years_bike_related_purchases","age"])
 
@@ -169,6 +170,6 @@ plot_silhouette(data, labels)
 
 # Create a pair plot 3x3 to compare performance
 filename2 = 'manyCharts'
-sns.pairplot(df, hue='Cluster', palette='Spectral')
+sns.pairplot(data, hue='Cluster', palette='Spectral')
 plt.savefig('outputs/' + filename2 + '.jpg', dpi=250)
 plt.show()
