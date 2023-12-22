@@ -37,8 +37,9 @@ n_clusters = coeffs.index(max(coeffs)) + 2
 print('Decided cluster length: ' + str(n_clusters) + '\n')
 
 # Rerun KMeans after training and add the clusters to the dataframe
+# Note: We set the number of clusters here, to be consistent with the other algorithms in the project
 print('Running KMeans with decided cluster length...')
-kmeans = KMeans(n_clusters=4)
+kmeans = KMeans(n_clusters=3)
 kmeans.fit(data)
 data['Cluster'] = pd.Series(kmeans.labels_)
 print('-------------------- KMeans complete --------------------\n')
@@ -69,9 +70,6 @@ def plot_silhouette(data, labels):
     plt.xlabel('Silhouette coefficient')
     plt.show()
 
-def silhouette_average(data, labels):
-    return silhouette_score(data, labels)
-
 def plot_matrix_graphs(df, filename):
     # Remove extra stuff we dont want to compare
     df = df.drop(['online_order', 'brand', 'product_line', 'product_size', 'gender', 'wealth_segment', 'owns_car', 'age'], axis=1)
@@ -84,4 +82,4 @@ def plot_matrix_graphs(df, filename):
 plot_silhouette(data, kmeans.labels_)
 plot_matrix_graphs(data, 'output_kmeans')
 
-print(silhouette_average(data, kmeans.labels_))
+print(silhouette_score(data, kmeans.labels_))
