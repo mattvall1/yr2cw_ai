@@ -1,6 +1,6 @@
 """
     Author: Matthew Vallance 001225832
-    Purpose: K-Means algorithm
+    Purpose: K-Means algorithm - implemeneted for use with 99Bikes data set
     Date: 10/11/23
 """
 import numpy as np
@@ -44,7 +44,9 @@ kmeans.fit(data)
 data['Cluster'] = pd.Series(kmeans.labels_)
 print('-------------------- KMeans complete --------------------\n')
 
+
 # Plotting functions
+
 def plot_silhouette(data, labels):
     cluster_labels = np.unique(labels)
     n_clusters = len(cluster_labels)
@@ -70,14 +72,17 @@ def plot_silhouette(data, labels):
     plt.xlabel('Silhouette coefficient')
     plt.show()
 
+
 def plot_matrix_graphs(df, filename):
-    # Remove extra stuff we dont want to compare
-    df = df.drop(['online_order', 'brand', 'product_line', 'product_size', 'gender', 'wealth_segment', 'owns_car', 'age'], axis=1)
+    # Remove extra stuff we don't want to compare
+    df = df.drop(['online_order', 'brand', 'product_line', 'product_size', 'gender', 'wealth_segment', 'owns_car', 'age'],
+        axis=1)
     # Create a pair plot
     graph = sns.pairplot(df, hue='Cluster', palette='Spectral')
 
-    plt.savefig('outputs/'+filename+'.jpg', dpi=250)
+    plt.savefig('outputs/' + filename + '.jpg', dpi=250)
     plt.show()
+
 
 plot_silhouette(data, kmeans.labels_)
 plot_matrix_graphs(data, 'output_kmeans')

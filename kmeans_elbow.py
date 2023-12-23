@@ -5,7 +5,6 @@
 """
 import csv
 import matplotlib.pyplot as plt
-from sklearn.metrics import silhouette_score
 from sklearn.cluster import KMeans
 
 
